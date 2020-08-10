@@ -1,9 +1,12 @@
 <template>
     <div>
-        <router-link to="/">Home</router-link>
-        <router-link to="/second">Second</router-link>
-
-        <router-view></router-view>
+        <nav class="navbar bg-dark border-bottom navbar-dark">
+            <router-link class="navbar-brand mr-auto" :to="{name: 'home'}">LaravelBNB</router-link>
+            <router-link class="btn btn-dark nav-button" :to="{name: 'second'}">Second</router-link>
+        </nav>
+        <div class="container my-4 px-4">
+            <router-view></router-view>
+        </div>
     </div>
 </template>
 

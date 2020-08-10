@@ -1,3 +1,4 @@
+<router-view></router-view>
 <template>
     <div class="container">
         <div class="row justify-content-center">
@@ -6,7 +7,7 @@
                     <div class="card-header">HELLLLLLOOOO</div>
 
                     <div class="card-body">
-                        MY NAME IS DORA
+                        MY NAME Ilet $ctrl = this;S DORA
                     </div>
                 </div>
             </div>
