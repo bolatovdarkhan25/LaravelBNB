@@ -1,5 +1,3 @@
-import Example2 from "./components/Example2";
-
 require('./bootstrap');
 
 import router from "./routes";
@@ -16,6 +14,5 @@ const app = new Vue({
     router,
     components: {
         'index': Index,
-        'example2': Example2
     }
 });

@@ -6,8 +6,7 @@
                 v-for="(bookable, column) in bookablesInRow(row)"
             >
                 <bookable-list-item
-                    :item-title="bookable.title"
-                    :item-content="bookable.description"
+                    v-bind="bookable"
                 >
                 </bookable-list-item>
             </div>
@@ -50,7 +49,7 @@
             const request = axios
                 .get('/api/bookables')
                 .then(response => {
-                    this.bookables = response.data;
+                    this.bookables = response.data.data;
                 });
 
 
