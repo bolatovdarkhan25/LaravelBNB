@@ -19,3 +19,5 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::apiResource('bookables', 'Api\BookablesController')->except(['create']);
+Route::get('bookables/{bookable}/availability', 'Api\BookableAvailabilityController')
+    ->name('bookable.availability.show');
