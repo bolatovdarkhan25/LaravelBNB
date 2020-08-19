@@ -21,6 +21,8 @@ class BookableAvailabilityController extends Controller
             'to' => 'required|date|after_or_equal:from'
         ]);
 
-        dd($bookable->bookings()->betweenDates($data['from'], $data['to'])->count());
+        return $bookable->availableFor($data['from'], $data['to'])
+            ? response()->json([])
+            : response()->json([], 404);
     }
 }
