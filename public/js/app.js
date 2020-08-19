@@ -1974,12 +1974,17 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {
       from: null,
-      to: null
+      to: null,
+      loading: null,
+      status: null,
+      errors: null
     };
   },
   methods: {
     check: function check() {
-      alert('Hey you\'ve just clicked this!');
+      this.errors = null;
+      this.loading = true;
+      axios.get("/api/bookables/".concat(this.$route.params.id, "/availability"));
     }
   }
 });

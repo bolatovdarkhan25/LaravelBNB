@@ -38,12 +38,32 @@
         data () {
             return {
                 from: null,
-                to: null
+                to: null,
+                loading: null,
+                status: null,
+                errors: null,
+
             }
         },
         methods: {
             check () {
-                alert('Hey you\'ve just clicked this!');
+                this.errors = null;
+                this.loading = true;
+                axios.get(
+                    `/api/bookables/${this.$route.params.id}/availability?from=${this.from}&to=${this.to}`
+                )
+                .then(function (response) {
+                    this.status = response.status;
+                })
+                .catch(function (error) {
+                    if (error.response.status === 422) {
+                        this.errors = error.response.data.errors;
+                    }
+                    this.status = error.response.status;
+                })
+                .then(function () {
+                    this.loading = false;
+                })
             }
         }
     }
