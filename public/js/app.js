@@ -1969,6 +1969,14 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "Availability",
   data: function data() {
@@ -1982,9 +1990,36 @@ __webpack_require__.r(__webpack_exports__);
   },
   methods: {
     check: function check() {
-      this.errors = null;
+      var _this = this;
+
+      var $ctrl = this;
+      $ctrl.errors = null;
       this.loading = true;
-      axios.get("/api/bookables/".concat(this.$route.params.id, "/availability"));
+      axios.get("/api/bookables/".concat(this.$route.params.id, "/availability?from=").concat(this.from, "&to=").concat(this.to)).then(function (response) {
+        _this.status = response.status;
+      })["catch"](function (error) {
+        if (error.response.status === 422) {
+          $ctrl.errors = error.response.data.errors;
+        }
+
+        $ctrl.status = error.response.status;
+      }).then(function () {
+        _this.loading = false;
+      });
+    },
+    errorFor: function errorFor(field) {
+      return this.hasErrors && this.errors[field] ? this.errors[field] : null;
+    }
+  },
+  computed: {
+    hasErrors: function hasErrors() {
+      return 422 === this.status && this.errors !== null;
+    },
+    hasAvailability: function hasAvailability() {
+      return 200 === this.status;
+    },
+    noAvailability: function noAvailability() {
+      return 400 === this.status;
     }
   }
 });
@@ -38402,7 +38437,7 @@ var render = function() {
           "router-link",
           {
             staticClass: "btn btn-dark nav-button",
-            attrs: { to: { name: "bookable" } }
+            attrs: { to: { name: "bookable", params: { id: 1 } } }
           },
           [_vm._v("Bookable")]
         )
@@ -38443,85 +38478,109 @@ var render = function() {
     ),
     _vm._v(" "),
     _c("div", { staticClass: "form-row" }, [
-      _c("div", { staticClass: "form-group col-md-6" }, [
-        _c("label", { attrs: { for: "from" } }, [_vm._v("From")]),
-        _vm._v(" "),
-        _c("input", {
-          directives: [
-            {
-              name: "model",
-              rawName: "v-model",
-              value: _vm.from,
-              expression: "from"
-            }
-          ],
-          staticClass: "form-control from-control-sm",
-          attrs: {
-            type: "text",
-            id: "from",
-            name: "from",
-            placeholder: "Start date"
-          },
-          domProps: { value: _vm.from },
-          on: {
-            keyup: function($event) {
-              if (
-                !$event.type.indexOf("key") &&
-                _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
-              ) {
-                return null
+      _c(
+        "div",
+        { staticClass: "form-group col-md-6" },
+        [
+          _c("label", { attrs: { for: "from" } }, [_vm._v("From")]),
+          _vm._v(" "),
+          _c("input", {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.from,
+                expression: "from"
               }
-              return _vm.check($event)
+            ],
+            staticClass: "form-control from-control-sm",
+            class: [{ "is-invalid": this.errorFor("from") }],
+            attrs: {
+              type: "text",
+              id: "from",
+              name: "from",
+              placeholder: "Start date"
             },
-            input: function($event) {
-              if ($event.target.composing) {
-                return
+            domProps: { value: _vm.from },
+            on: {
+              keyup: function($event) {
+                if (
+                  !$event.type.indexOf("key") &&
+                  _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
+                ) {
+                  return null
+                }
+                return _vm.check($event)
+              },
+              input: function($event) {
+                if ($event.target.composing) {
+                  return
+                }
+                _vm.from = $event.target.value
               }
-              _vm.from = $event.target.value
             }
-          }
-        })
-      ]),
+          }),
+          _vm._v(" "),
+          _vm._l(this.errorFor("from"), function(error) {
+            return _c("div", { staticClass: "invalid-feedback" }, [
+              _vm._v("\n                " + _vm._s(error) + "\n            ")
+            ])
+          })
+        ],
+        2
+      ),
       _vm._v(" "),
-      _c("div", { staticClass: "form-group col-md-6" }, [
-        _c("label", { attrs: { for: "to" } }, [_vm._v("To")]),
-        _vm._v(" "),
-        _c("input", {
-          directives: [
-            {
-              name: "model",
-              rawName: "v-model",
-              value: _vm.to,
-              expression: "to"
-            }
-          ],
-          staticClass: "form-control from-control-sm",
-          attrs: {
-            type: "text",
-            id: "to",
-            name: "to",
-            placeholder: "End date"
-          },
-          domProps: { value: _vm.to },
-          on: {
-            keyup: function($event) {
-              if (
-                !$event.type.indexOf("key") &&
-                _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
-              ) {
-                return null
+      _c(
+        "div",
+        { staticClass: "form-group col-md-6" },
+        [
+          _c("label", { attrs: { for: "to" } }, [_vm._v("To")]),
+          _vm._v(" "),
+          _c("input", {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.to,
+                expression: "to"
               }
-              return _vm.check($event)
+            ],
+            staticClass: "form-control from-control-sm",
+            class: [{ "is-invalid": this.errorFor("to") }],
+            attrs: {
+              type: "text",
+              id: "to",
+              name: "to",
+              placeholder: "End date"
             },
-            input: function($event) {
-              if ($event.target.composing) {
-                return
+            domProps: { value: _vm.to },
+            on: {
+              keyup: function($event) {
+                if (
+                  !$event.type.indexOf("key") &&
+                  _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
+                ) {
+                  return null
+                }
+                return _vm.check($event)
+              },
+              input: function($event) {
+                if ($event.target.composing) {
+                  return
+                }
+                _vm.to = $event.target.value
               }
-              _vm.to = $event.target.value
             }
-          }
-        })
-      ]),
+          }),
+          _vm._v(" "),
+          _vm._l(this.errorFor("to"), function(error) {
+            return _c("div", { staticClass: "invalid-feedback" }, [
+              _vm._v("\n                " + _vm._s(error) + "\n            ")
+            ])
+          })
+        ],
+        2
+      ),
       _vm._v(" "),
       _c(
         "button",
@@ -54337,8 +54396,8 @@ var routes = [{
   name: 'bookable'
 }];
 var router = new vue_router__WEBPACK_IMPORTED_MODULE_2__["default"]({
-  routes: routes,
-  mode: 'history'
+  mode: 'history',
+  routes: routes
 });
 /* harmony default export */ __webpack_exports__["default"] = (router);
 

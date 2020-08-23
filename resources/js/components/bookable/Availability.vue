@@ -12,7 +12,11 @@
                     placeholder="Start date"
                     v-model="from"
                     @keyup.enter="check"
+                    :class="[{'is-invalid': this.errorFor('from')}]"
                 >
+                <div class="invalid-feedback" v-for="error in this.errorFor('from')">
+                    {{error}}
+                </div>
             </div>
 
             <div class="form-group col-md-6">
@@ -25,7 +29,11 @@
                     placeholder="End date"
                     v-model="to"
                     @keyup.enter="check"
+                    :class="[{'is-invalid': this.errorFor('to')}]"
                 >
+                <div class="invalid-feedback" v-for="error in this.errorFor('to')">
+                    {{error}}
+                </div>
             </div>
             <button class="btn btn-primary btn-block" @click="check">Check!</button>
         </div>
@@ -47,23 +55,38 @@
         },
         methods: {
             check () {
-                this.errors = null;
+                let $ctrl = this;
+                $ctrl.errors = null;
                 this.loading = true;
                 axios.get(
                     `/api/bookables/${this.$route.params.id}/availability?from=${this.from}&to=${this.to}`
                 )
-                .then(function (response) {
+                .then(response => {
                     this.status = response.status;
                 })
-                .catch(function (error) {
+                .catch( function(error) {
                     if (error.response.status === 422) {
-                        this.errors = error.response.data.errors;
+                        $ctrl.errors = error.response.data.errors;
                     }
-                    this.status = error.response.status;
+                    $ctrl.status = error.response.status;
                 })
-                .then(function () {
+                .then(() => {
                     this.loading = false;
                 })
+            },
+            errorFor(field) {
+                return this.hasErrors && this.errors[field] ? this.errors[field] : null
+            }
+        },
+        computed: {
+            hasErrors() {
+                return 422 === this.status && this.errors !== null;
+            },
+            hasAvailability() {
+                return 200 === this.status;
+            },
+            noAvailability() {
+                return 400 === this.status;
             }
         }
     }
