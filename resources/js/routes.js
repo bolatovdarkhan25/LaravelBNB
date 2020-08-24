@@ -1,5 +1,5 @@
-import Bookables from './components/bookables/Bookables'
-import Bookable from './components/bookable/Bookable'
+import Bookables from './bookables/Bookables'
+import Bookable from './bookable/Bookable'
 import VueRouter from 'vue-router'
 
 const routes = [
@@ -16,8 +16,8 @@ const routes = [
 ];
 
 const router = new VueRouter({
-    mode: 'history',
-    routes
+    routes,
+    mode: 'history'
 });
 
 export default router;
