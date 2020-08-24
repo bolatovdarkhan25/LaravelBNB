@@ -13,7 +13,10 @@
             <div v-else>
                 Zagruzka bovatr e
             </div>
+
+            <review-list></review-list>
         </div>
+
         <div class="col-md-4 pb-4">
             <availability></availability>
         </div>
@@ -22,10 +25,12 @@
 
 <script>
     import Availability from "./Availability";
+    import ReviewList from "./ReviewList";
 
     export default {
         components: {
             Availability,
+            ReviewList
         },
         data () {
             return {
