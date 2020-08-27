@@ -1,9 +1,12 @@
 <template>
 
     <div class="d-flex ">
-        <i class="fas fa-star" v-for="star in fullStars"></i>
+        <i class="fas fa-star" v-for="star in fullStars" @click="$emit('input', star)"></i>
         <i class="fas fa-star-half-alt" v-if="halfStar"></i>
-        <i class="far fa-star" v-for="stars in emptyStars"></i>
+        <i class="far fa-star"
+           v-for="star in emptyStars"
+           @click="$emit('input', fullStars + star)">
+        </i>
     </div>
 
 </template>
@@ -12,17 +15,17 @@
     export default {
         name: "StarRating",
         props: {
-            rating: Number
+            value: Number
         },
         computed: {
             halfStar() {
-                return 5 - ((5 - Math.ceil(this.rating)) + Math.floor(this.rating)) !== 0;
+                return 5 - ((5 - Math.ceil(this.value)) + Math.floor(this.value)) !== 0;
             },
             fullStars() {
-                return Math.floor(this.rating);
+                return Math.floor(this.value);
             },
             emptyStars() {
-                return 5 - Math.ceil(this.rating);
+                return 5 - Math.ceil(this.value);
             }
         }
     }
