@@ -2,8 +2,10 @@
     <div>
         <h6 class="text-uppercase text-secondary font-weight-bolder">
             Check availability
-            <span v-if="noAvailability" class="text-danger">(NOT AVAILABLE)</span>
-            <span v-if="hasAvailability" class="text-success">(AVAILABLE)</span>
+            <transition name="fade">
+                <span v-if="noAvailability" class="text-danger">(NOT AVAILABLE)</span>
+                <span v-if="hasAvailability" class="text-success">(AVAILABLE)</span>
+            </transition>
         </h6>
         <div class="form-row">
             <div class="form-group col-md-6">
@@ -18,9 +20,7 @@
                     @keyup.enter="check"
                     :class="[{'is-invalid': this.errorFor('from')}]"
                 >
-                <div class="invalid-feedback" v-for="error in this.errorFor('from')">
-                    {{error}}
-                </div>
+                <validation-errors :errors="errorFor('from')"></validation-errors>
             </div>
 
             <div class="form-group col-md-6">
@@ -35,25 +35,30 @@
                     @keyup.enter="check"
                     :class="[{'is-invalid': this.errorFor('to')}]"
                 >
-                <div class="invalid-feedback" v-for="error in this.errorFor('to')">
-                    {{error}}
-                </div>
+                <validation-errors :errors="errorFor('to')"></validation-errors>
             </div>
-            <button class="btn btn-primary btn-block" @click="check">Check!</button>
+            <button class="btn btn-primary btn-block" @click="check">
+                <span v-if="!loading">Check!</span>
+                <span v-else class="fas fa-cog fa-spin">Checking...</span>
+            </button>
         </div>
     </div>
 </template>
 
 <script>
+    import { is422 } from "../shared/utils/response";
+    import validationErrors from "../shared/mixins/validationErrors";
+
     export default {
+        mixins: [validationErrors],
         name: "Availability",
         props: {
-            bookableId: String,
+            bookableId: [String, Number],
         },
         data () {
             return {
-                from: null,
-                to: null,
+                from: this.$store.state.lastSearch.from,
+                to: this.$store.state.lastSearch.to,
                 loading: null,
                 status: null,
                 errors: null,
@@ -61,29 +66,32 @@
             }
         },
         methods: {
-            check () {
+            async check () {
                 let $ctrl = this;
                 $ctrl.errors = null;
                 this.loading = true;
-                axios.get(
-                    `/api/bookables/${this.bookableId}/availability?from=${this.from}&to=${this.to}`
-                )
-                .then(response => {
-                    this.status = response.status;
-                })
-                .catch( function(error) {
-                    if (error.response.status === 422) {
+
+                await this.$store.dispatch('setLastSearch', {
+                    from: this.from,
+                    to: this.to
+                });
+
+                try {
+                    this.status = (await axios.get(
+                        `/api/bookables/${this.bookableId}/availability?from=${this.from}&to=${this.to}`
+                    )).status;
+                    this.$emit('availability', this.hasAvailability);
+                } catch (error) {
+                    if (is422(error)) {
                         $ctrl.errors = error.response.data.errors;
                     }
                     $ctrl.status = error.response.status;
-                })
-                .then(() => {
-                    this.loading = false;
-                })
+
+                    this.$emit('availability', this.hasAvailability);
+                }
+
+                this.loading = false;
             },
-            errorFor(field) {
-                return this.hasErrors && this.errors[field] ? this.errors[field] : null
-            }
         },
         computed: {
             hasErrors() {

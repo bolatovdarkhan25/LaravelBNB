@@ -9,5 +9,6 @@ $factory->define(\App\Bookable::class, function (Faker $faker) {
     return [
         'title' => $faker->sentence,
         'description' => $faker->text,
+        'price' => random_int(15, 999999999),
     ];
 });

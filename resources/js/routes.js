@@ -1,5 +1,5 @@
 import Bookables from './bookables/Bookables'
-import Bookable from './bookable/Bookable'
+import Bookable from './bookable/bookable-component/Bookable'
 import VueRouter from 'vue-router'
 import Review from './review/Review'
 
